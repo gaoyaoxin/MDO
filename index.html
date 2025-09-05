@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Digital Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- <link href="all.min.css" rel="stylesheet" type="text/css">不可本地部署 -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+/*            background: linear-gradient(135deg, #2c3e50 0%, #4a5568 100%);*/
+            /* 或者使用更柔和的渐变 */
+            background: linear-gradient(135deg, #3a506b 0%, #1c2541 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #e2e8f0; /* 柔和的浅灰色 */
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        .search-container {
+            background: white;
+            border-radius: 50px;
+            padding: 5px 20px;
+            display: flex;
+            align-items: center;
+            max-width: 600px;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .search-container i {
+            color: #6a11cb;
+            font-size: 1.2rem;
+            margin-right: 10px;
+        }
+        
+        #search {
+            color: #666;
+            width: 100%;
+            padding: 15px 10px;
+            border: none;
+            outline: none;
+            font-size: 1.1rem;
+            background: transparent;
+        }
+
+
+        #search::placeholder {
+            color: #cbd5e0;
+        }
+
+
+        
+        /* 调整网格布局，缩小卡片宽度 */
+        .websites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+        
+        .website-card {
+            padding: 15px;  /* 调整卡片内部间距 */
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+            background-color: #e6d2b5; /* 浅木色 */
+/*            background-color: #f9f3e9; 更浅的米白色，更易阅读*/
+            
+            /* 添加微妙纹理增强质感 */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .website-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .website-card.disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .website-card.disabled:hover {
+            transform: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-content {
+            padding: 20px;
+        }
+        
+        .website-name {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            color: #2d3748; /* 深灰色 */
+            display: flex;
+            align-items: center;
+        }
+        
+        .website-name i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+        
+        .website-notes {
+            color: #4a5568; /* 中灰色 */
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .website-url {
+            color: #718096; /* 浅灰色 */
+            border-top: 1px solid #e2e8f0; /* 浅分隔线 */
+            font-size: 0.9rem;
+            word-break: break-all;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            color: #666;
+        }
+        
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .disabled-message {
+            display: none;
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .website-card.disabled:hover .disabled-message {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #a0aec0; /* 更暗的灰色 */
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .websites-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .websites-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-container {
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 12px;
+                max-width: 500px;  /* 调整搜索框宽度 */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>北外常用网站导航</h1>
+            <p class="description">Make Digital Online 让数字北外不再掉线</p>
+            
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search" placeholder="搜索关键字或网址">
+            </div>
+        </header>
+        
+        <div class="websites-grid" id="websites-container">
+            <!-- 网站卡片将通过JavaScript动态生成 -->
+        </div>
+        
+        <footer>
+            <p>© 2025 MDO | <span id="count">0</span> Websites here</p>
+        </footer>
+    </div>
+
+    <script>
+        // 网站数据
+        const websiteData = {
+            "websites": [
+    {
+      "Name": "localhost",
+      "URL": "http://localhost:8000/",
+      "Notes": "localhost测试服务器"
+    },
+    {
+      "Name": "重定向至联网界面",
+      "URL": "http://www.msftconnecttest.com/redirect",
+      "Notes": NaN
+    },
+    {
+      "Name": "一卡通",
+      "URL": "https://card.bfsu.edu.cn/sso/login",
+      "Notes": "查看一卡通余额等"
+    },
+    {
+      "Name": "视频号助手",
+      "URL": "https://channels.weixin.qq.com/platform/post/list",
+      "Notes": NaN
+    },
+    {
+      "Name": "DeepSeek",
+      "URL": "https://chat.deepseek.com/",
+      "Notes": NaN
+    },
+    {
+      "Name": "学信网",
+      "URL": "https://chsi.com.cn/",
+      "Notes": NaN
+    },
+    {
+      "Name": "Bing Search",
+      "URL": "https://cn.bing.com",
+      "Notes": "必应搜索引擎"
+    },
+    {
+      "Name": "微信文件传输助手网页版",
+      "URL": "https://filehelper.weixin.qq.com/",
+      "Notes": NaN
+    },
+    {
+      "Name": "This Site",
+      "URL": "https://github.com/gaoyaoxin/MDO",
+      "Notes": "This site is made by Gao Yaoxin and hosted on GitHub"
+    },
+    {
+      "Name": "北外Google",
+      "URL": "https://google.bfsu.edu.cn/",
+      "Notes": "谷歌搜索引擎"
+    },
+    {
+      "Name": "北外iCloud",
+      "URL": "https://icloud.bfsu.edu.cn/",
+      "Notes": "北外iCloud网盘"
+    },
+    {
+      "Name": "视频解析下载",
+      "URL": "https://iiilab.com/",
+      "Notes": NaN
+    },
+    {
+      "Name": "图书馆",
+      "URL": "https://lib.bfsu.edu.cn/",
+      "Notes": NaN
+    },
+    {
+      "Name": "图书馆研读间",
+      "URL": "https://libcab.bfsu.edu.cn/#/ic/home",
+      "Notes": "图书馆研读间预约，默认账密：学号"
+    },
+    {
+      "Name": "北外邮箱",
+      "URL": "https://mail.bfsu.edu.cn/",
+      "Notes": NaN
+    },
+    {
+      "Name": "QQ邮箱",
+      "URL": "https://mail.qq.com/",
+      "Notes": NaN
+    },
+    {
+      "Name": "数北",
+      "URL": "https://my.bfsu.edu.cn/tp_up/",
+      "Notes": "数字北外"
+    },
+    {
+      "Name": "校园网",
+      "URL": "https://mynet.bfsu.edu.cn/home",
+      "Notes": "查看网费余额等"
+    },
+    {
+      "Name": "北外网络电视",
+      "URL": "https://tv.bfsu.edu.cn/bfsu/list/channel/%E9%AB%98%E6%B8%85%E9%A2%91%E9%81%93",
+      "Notes": NaN
+    },
+    {
+      "Name": "B站",
+      "URL": "https://www.bilibili.com/",
+      "Notes": "bilibili"
+    },
+    {
+      "Name": "iCloud Drive",
+      "URL": "https://www.icloud.com.cn/iclouddrive/",
+      "Notes": NaN
+    },
+    {
+      "Name": "iCloud Notes",
+      "URL": "https://www.icloud.com.cn/notes",
+      "Notes": NaN
+    },
+    {
+      "Name": "校医院",
+      "URL": "https://xyy.bfsu.edu.cn/",
+      "Notes": "微信公众号：北外健康ABC"
+    },
+    {
+      "Name": "保卫处",
+      "URL": NaN,
+      "Notes": "微信公众号：平安北外"
+    }
+  ]
+        };
+
+        // 处理NaN值
+        function processData(data) {
+            return data.map(item => {
+                return {
+                    ...item,
+                    Notes: isNaN(item.Notes) ? item.Notes : "暂无备注",
+                    URL: isNaN(item.URL) ? item.URL : null
+                };
+            });
+        }
+
+        // 渲染网站卡片
+        function renderWebsites(websites) {
+            const container = document.getElementById('websites-container');
+            const countElement = document.getElementById('count');
+            
+            // 更新计数
+            countElement.textContent = websites.length;
+            
+            // 清空容器
+            container.innerHTML = '';
+            
+            if (websites.length === 0) {
+                container.innerHTML = `
+                    <div class="no-results">
+                        <i class="fas fa-search fa-3x" style="margin-bottom: 20px;"></i>
+                        <h2>未找到匹配的网站</h2>
+                        <p>请尝试使用其他关键词进行搜索</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 生成卡片HTML
+            websites.forEach(site => {
+                const isDisabled = !site.URL;
+                const notes = site.Notes || "暂无备注";
+                
+                const card = document.createElement('div');
+                card.className = `website-card ${isDisabled ? 'disabled' : ''}`;
+                
+                card.innerHTML = `
+                    ${isDisabled ? '' : `<a href="${site.URL}" target="_blank" class="card-link">`}
+                        <div class="card-content">
+                            <h2 class="website-name">
+                                <i class="fas ${getIcon(site.Name)}"></i>
+                                ${site.Name}
+                            </h2>
+                            <p class="website-notes">${notes}</p>
+                            <p class="website-url">${site.URL || '无可用URL'}</p>
+                        </div>
+                        ${isDisabled ? '<div class="disabled-message">该网站暂无可用链接</div>' : ''}
+                    ${isDisabled ? '' : '</a>'}
+                `;
+                
+                container.appendChild(card);
+            });
+        }
+
+        // 根据网站名称获取图标
+        function getIcon(name) {
+            if (name.includes('B站') || name.includes('bilibili')) return 'fa-play-circle';
+            // if (name.includes('微信')) return 'fa-weixin'; 没有图标
+            // if (name.includes('QQ') || name.includes('qq')) return 'fa-qq'; 没有图标
+            if (name.includes('邮件') || name.includes('邮箱')) return 'fa-envelope';
+            if (name.includes('视频')) return 'fa-video';
+            if (name.includes('云') || name.includes('iCloud')) return 'fa-cloud';
+            if (name.includes('搜索') || name.includes('Bing')) return 'fa-search';
+            if (name.includes('本地') || name.includes('localhost')) return 'fa-server';
+            return 'fa-globe';
+        }
+
+        // 搜索功能
+        function setupSearch(websites) {
+            const searchInput = document.getElementById('search');
+            
+            searchInput.addEventListener('input', () => {
+                const query = searchInput.value.toLowerCase().trim();
+                
+                if (!query) {
+                    renderWebsites(websites);
+                    return;
+                }
+                
+                const filtered = websites.filter(site => {
+                    return (
+                        site.Name.toLowerCase().includes(query) ||
+                        (site.Notes && site.Notes.toLowerCase().includes(query)) ||
+                        (site.URL && site.URL.toLowerCase().includes(query))
+                    );
+                });
+                
+                renderWebsites(filtered);
+            });
+        }
+
+
+        // 自动聚焦功能
+        function initAutoFocus() {
+            const searchInput = document.getElementById('search');
+            if (searchInput) {
+                // 添加短暂延迟确保页面完全加载
+                setTimeout(() => {
+                    searchInput.focus();
+                    // 可选：选中所有已有文本
+                    searchInput.select();
+                }, 100);
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const processedData = processData(websiteData.websites);
+            renderWebsites(processedData);
+            setupSearch(processedData);
+            initAutoFocus();
+        });
+    </script>
+</body>
+</html>
